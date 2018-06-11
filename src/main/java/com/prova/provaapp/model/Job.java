@@ -1,15 +1,17 @@
 package com.prova.provaapp.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Entity
-public class Job {
+@Table(name = "job")
+public class Job implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,15 +23,20 @@ public class Job {
 	@NotNull
 	private Boolean  active;
 
-	List<Task> ltask;
+	@OneToMany(mappedBy = "job", cascade = CascadeType.ALL)
+	private List<Task> tasks;
 
-    public List<Task> getLtask() {
-        return ltask;
-    }
+    @ManyToOne(cascade={CascadeType.ALL})
+    @JoinColumn(name="job_id")
+    private Job jobFather;
 
-    public void setLtask(List<Task> ltask) {
-        this.ltask = ltask;
-    }
+    @OneToMany(mappedBy="jobFather")
+    private Set<Job> parentJob = new HashSet<Job>();
+
+
+	public Job(){
+
+	}
 
     public Integer getId() {
 		return id;
@@ -55,8 +62,27 @@ public class Job {
 		this.active = active;
 	}
 
-	public List<Task> sortByweight(){
-		ltask.sort((Task s1, Task s2) -> s1.getWeight() - s2.getWeight());
-		return ltask;
+	public List<Task> getTasks() {
+		return tasks;
+	}
+
+	public void setTasks(List<Task> tasks) {
+		this.tasks = tasks;
+	}
+
+    public Job getJobFather() {
+        return jobFather;
+    }
+
+    public void setJobFather(Job jobFather) {
+        this.jobFather = jobFather;
+    }
+
+    public Set<Job> getParentJob() {
+        return parentJob;
+    }
+
+    public void setParentJob(Set<Job> parentJob) {
+        this.parentJob = parentJob;
     }
 }

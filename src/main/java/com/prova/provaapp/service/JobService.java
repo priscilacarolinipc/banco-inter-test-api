@@ -1,34 +1,48 @@
 package com.prova.provaapp.service;
 
 import com.prova.provaapp.model.Job;
-import com.prova.provaapp.repository.JobRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import com.prova.provaapp.service.exception.JobTaskException;
 
-import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
-@Service
-public class JobService {
+public interface JobService{
 
-    private final JobRepository jobRepository;
+     /**
+     * Retorna um job dado um id.
+     *
+     * @param id
+     * @return Job
+     */
+    Optional<Job> findById(Integer id);
 
-    public JobService(JobRepository jobRepository) {
-        this.jobRepository = jobRepository;
-    }
+    /**
+     * Retorna um job dado um nome.
+     *
+     * @param name
+     * @return Job
+     */
+    Job findByName(String name);
 
+     /**
+     * Salva um job.
+     *
+     * @param job
+     * @return Job     */
+    Job adicionar(Job job) throws JobTaskException;
 
-    @GetMapping(produces="application/json")
-    public @ResponseBody
-    List<Job> listar() {
-        return jobRepository.findAll();
-    }
+    /**
+     * Remove um job.
+     *
+     * @param id
+     */
+    void remover(Integer id);
 
-    @PostMapping
-    public Job adicionar(@Valid @RequestBody Job job) {
-        return jobRepository.save(job);
-    }
+    /**
+     * Retorna umas lista de tasks.
+     *
+     * @return List<Job>
+     */
+    List<Job> listar();
+
 }

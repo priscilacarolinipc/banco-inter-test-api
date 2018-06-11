@@ -1,11 +1,15 @@
 package com.prova.provaapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 
 @Entity
+@Table(name = "task")
 public class Task implements Comparable<Task> {
 	
 	@Id
@@ -20,22 +24,15 @@ public class Task implements Comparable<Task> {
 
 	private boolean  completed;
 
-	private Date datacriacao;
-
-	public Date getDatacriacao() {
-		return datacriacao;
-	}
-
-	public void setDatacriacao(Date datacriacao) {
-		this.datacriacao = datacriacao;
-	}
+    @Temporal(TemporalType.DATE)
+    @Column(name = "created_at", nullable = false, updatable = false)
+	private Date createdAt;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "JobId")
+	@JoinColumn(name = "job_id", referencedColumnName = "id")
 	private Job job;
 
-
-	public Integer getId() {
+    public Integer getId() {
 		return id;
 	}
 
@@ -67,6 +64,8 @@ public class Task implements Comparable<Task> {
 		this.completed = completed;
 	}
 
+	@JsonIgnore
+	@JsonProperty(value = "job")
 	public Job getJob() {
 		return job;
 	}
@@ -75,8 +74,20 @@ public class Task implements Comparable<Task> {
 		this.job = job;
 	}
 
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
 	@Override
 	public int compareTo(Task o) {
 		return this.getWeight() - o.getWeight();
+	}
+
+	@PrePersist
+	public void prePersist() {
 	}
 }
